@@ -1,7 +1,5 @@
 import { BrowserRouter as Router, Route } from "react-router-dom";
-
-import TicketDetails from "./pages/TicketDetails";
-import Listing from "./pages/Listing";
+import { TicketDetails, Listing } from "./pages";
 
 const Routes = () => {
   return (
