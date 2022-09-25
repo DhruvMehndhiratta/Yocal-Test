@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
 import { Card } from 'react-bootstrap';
 import { useParams } from 'react-router';
-import { SpinnerLoader } from 'src/app/components';
+import { SpinnerLoader, Avatar } from 'src/app/components';
 import { Ticket, User } from 'src/app/types';
 import { API_BASE_URL } from 'src/constants';
 
@@ -41,13 +41,20 @@ export const TicketDetails = () => {
   }
 
   const { id='', status='', number='' } = ticket || {};
+  const { image='', firstName, lastName } = user || {};
 
   return <div>
     <Card>
       <Card.Body>
         <p>Ticket No.: {number}</p>
         <p className='text-capitalize'>Status: {status}</p>
-
+        {
+          user ? <>
+            <div className="d-flex align-items-center">
+              <Avatar url={image} />
+              <span>{firstName} {lastName}</span>
+            </div>
+          </> : null}
       </Card.Body>
     </Card>
   </div>;
