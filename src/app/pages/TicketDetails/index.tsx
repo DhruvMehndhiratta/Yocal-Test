@@ -1,10 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
-import { Card, Dropdown, Spinner } from 'react-bootstrap';
+import { Card, Dropdown, Form, Spinner } from 'react-bootstrap';
 import { useParams } from 'react-router';
 import { SpinnerLoader, Avatar } from 'src/app/components';
 import { Ticket, User } from 'src/app/types';
-import { API_BASE_URL } from 'src/constants';
+import { API_BASE_URL, assigneeFilters } from 'src/constants';
 
 type RouteParams = { ticketId: string; };
 
@@ -46,13 +46,6 @@ export const TicketDetails = () => {
     fetchUsers();
   }, [ ticketId ]);
 
-  const updateAssignee = async (userId: number) => {
-    setAssigneeLoading(true);
-    const response = await axios.patch(`${API_BASE_URL}/tickets/${ticketId}`, { userId });
-    setTicket(response.data);
-    fetchUser(response.data.userId);
-  }
-
   if(loading) {
     return <SpinnerLoader />;
   }
@@ -60,11 +53,33 @@ export const TicketDetails = () => {
   const { status='', number='' } = ticket || {};
   const { image='', firstName, lastName } = user || {};
 
+  const updateAssignee = async (userId: number) => {
+    setAssigneeLoading(true);
+    const payload: { userId: number; status?: string; } = { userId };
+    if(status === 'unassigned') {
+      payload.status = 'assigned';
+    }
+    const response = await axios.patch(`${API_BASE_URL}/tickets/${ticketId}`, payload);
+    setTicket(response.data);
+    fetchUser(response.data.userId);
+  }
+
+  const updateStatus = async (status: string) => {
+    const response = await axios.patch(`${API_BASE_URL}/tickets/${ticketId}`, { status });
+    setTicket(response.data);
+  }
+
   return <div>
     <Card>
       <Card.Body>
         <p>Ticket No.: {number}</p>
-        <p className='text-capitalize'>Status: {status}</p>
+        <p className='text-capitalize'>Status: 
+          <Form.Select className="d-inline-block w-auto ms-2" onChange={(e) => updateStatus(e.target.value)}>
+            {assigneeFilters.map(({label, value}: {label: string; value: string;}) => {
+              return <option key={value}>{label}</option>
+            })}
+          </Form.Select>
+        </p>
         <div className="d-flex align-items-center">
           <Avatar url={image} />
           <Dropdown className="ms-2">
