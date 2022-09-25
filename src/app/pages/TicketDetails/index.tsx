@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
 import { Card } from 'react-bootstrap';
 import { useParams } from 'react-router';
+import { SpinnerLoader } from 'src/app/components';
 import { Ticket, User } from 'src/app/types';
 import { API_BASE_URL } from 'src/constants';
 
@@ -11,7 +12,7 @@ export const TicketDetails = () => {
 
   const [ ticket, setTicket ] = useState<Ticket | null>(null);
   const [ user, setUser ] = useState<User | null>(null);
-  const [ loading, setLoading ] = useState(false);
+  const [ loading, setLoading ] = useState(true);
 
   const params = useParams<RouteParams>();
   const { ticketId='' } = params;
@@ -21,6 +22,8 @@ export const TicketDetails = () => {
       if(userId) {
         const response: AxiosResponse = await axios.get(`${API_BASE_URL}/users/${userId}`);
         setUser(response.data);
+        setLoading(false);
+      } else {
         setLoading(false);
       }
     }
@@ -34,7 +37,7 @@ export const TicketDetails = () => {
   }, [ ticketId ]);
 
   if(loading) {
-    return null;
+    return <SpinnerLoader />;
   }
 
   const { id='', status='', number='' } = ticket || {};
@@ -44,6 +47,7 @@ export const TicketDetails = () => {
       <Card.Body>
         <p>Ticket No.: {number}</p>
         <p className='text-capitalize'>Status: {status}</p>
+
       </Card.Body>
     </Card>
   </div>;
