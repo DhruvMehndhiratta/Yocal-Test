@@ -10,16 +10,25 @@ interface SelectProps {
   options: IOption[];
   value: string;
   onChange: any;
+  className?: string;
+  showDefaultLabel?: boolean;
 }
 
-export const Select: FC<SelectProps> = ({ options = [], value, onChange }) => {
+export const Select: FC<SelectProps> = ({
+  options = [],
+  value,
+  onChange,
+  className = "",
+  showDefaultLabel = true,
+}) => {
   return (
     <Form.Select
       aria-label="Default select example"
       value={value}
       onChange={onChange}
+      className={className}
     >
-      <option value="">Choose By Status</option>
+      {showDefaultLabel ? <option value="">Choose By Status</option> : null}
       {options.map((item: IOption) => (
         <option key={item.value} value={item.value}>
           {item.label}

@@ -12,7 +12,7 @@ export const Card: FC<CardProps> = ({ ticket }) => {
   return (
     <CardComponent className="card-component">
       <CardComponent.Body>
-        <CardComponent.Title>{`Status: ${ticket.status}`}</CardComponent.Title>
+        <CardComponent.Title className="text-capitalize">{`Status: ${ticket.status}`}</CardComponent.Title>
         <CardComponent.Text>
           {`Ticket Number: ${ticket.number}`}
         </CardComponent.Text>
@@ -23,7 +23,7 @@ export const Card: FC<CardProps> = ({ ticket }) => {
           variant="primary"
           onClick={() => history.push(`/tickets/${ticket.id}`)}
         >
-          Ticket details
+          View details
         </Button>
       </CardComponent.Body>
     </CardComponent>

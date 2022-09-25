@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
-import { Card, Dropdown, Form, Spinner } from 'react-bootstrap';
+import { Card, Dropdown, Spinner } from 'react-bootstrap';
 import { useParams } from 'react-router';
-import { SpinnerLoader, Avatar } from 'src/app/components';
+import { SpinnerLoader, Avatar, Select } from 'src/app/components';
 import { Ticket, User } from 'src/app/types';
 import { API_BASE_URL, assigneeFilters } from 'src/constants';
 
@@ -73,12 +73,14 @@ export const TicketDetails = () => {
     <Card>
       <Card.Body>
         <p>Ticket No.: {number}</p>
-        <p className='text-capitalize'>Status: 
-          <Form.Select className="d-inline-block w-auto ms-2" onChange={(e) => updateStatus(e.target.value)}>
-            {assigneeFilters.map(({label, value}: {label: string; value: string;}) => {
-              return <option key={value}>{label}</option>
-            })}
-          </Form.Select>
+        <p className='text-capitalize'>Status:{' '}
+        <Select
+          className="d-inline-block w-auto ms-2"
+          options={assigneeFilters}
+          onChange={(e: any) => updateStatus(e.target.value)}
+          value={status}
+          showDefaultLabel={false}
+        />
         </p>
         <div className="d-flex align-items-center">
           <Avatar url={image} />
