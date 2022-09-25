@@ -5,7 +5,7 @@ import { User, Ticket } from '../../types/'
 import { SpinnerLoader, Card } from "../../components";
 
 export const Listing = () => {
-  const [tickets, setTickets] = useState([])
+  const [tickets, setTickets] = useState<Ticket[]>([])
   const [loading, setLoading] = useState(false);
   const fetchUsers = async() => {
     return axios.get(`${API_BASE_URL}/users`)
@@ -36,8 +36,7 @@ export const Listing = () => {
 
   return( <div className="app">
     {
-      loading ? <SpinnerLoader /> : tickets.map((item) => <Card ticket={item}/>)
+      loading ? <SpinnerLoader /> : tickets.map((item) => <Card key={item.number} ticket={item}/>)
     }
-    
   </div>)
 };
