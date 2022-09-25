@@ -4,7 +4,7 @@ import { TicketDetails, Listing } from "./pages";
 const Routes = () => {
   return (
     <Router>
-        <Route path="/ticket-detail" exact>
+        <Route path="/tickets/:ticketId" exact>
           <TicketDetails />
         </Route>
         <Route path="/" exact>
