@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
-import { Card } from 'react-bootstrap';
+import { Card, Dropdown, Spinner } from 'react-bootstrap';
 import { useParams } from 'react-router';
 import { SpinnerLoader, Avatar } from 'src/app/components';
 import { Ticket, User } from 'src/app/types';
@@ -12,20 +12,29 @@ export const TicketDetails = () => {
 
   const [ ticket, setTicket ] = useState<Ticket | null>(null);
   const [ user, setUser ] = useState<User | null>(null);
+  const [ users, setUsers ] = useState<User[]>([]);
   const [ loading, setLoading ] = useState(true);
+  const [ assigneeLoading, setAssigneeLoading ] = useState(false);
 
   const params = useParams<RouteParams>();
   const { ticketId='' } = params;
 
+  const fetchUser = async (userId: number) => {
+    if(userId) {
+      const response: AxiosResponse = await axios.get(`${API_BASE_URL}/users/${userId}`);
+      setUser(response.data);
+      setLoading(false);
+      setAssigneeLoading(false);
+    } else {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    const fetchUser = async (userId: string) => {
-      if(userId) {
-        const response: AxiosResponse = await axios.get(`${API_BASE_URL}/users/${userId}`);
-        setUser(response.data);
-        setLoading(false);
-      } else {
-        setLoading(false);
-      }
+
+    const fetchUsers = async () => {
+      const response: AxiosResponse = await axios.get(`${API_BASE_URL}/users`);
+      setUsers(response.data);
     }
 
     const fetchTicket = async () => {
@@ -34,13 +43,21 @@ export const TicketDetails = () => {
       fetchUser(response.data.userId);
     }
     fetchTicket();
+    fetchUsers();
   }, [ ticketId ]);
+
+  const updateAssignee = async (userId: number) => {
+    setAssigneeLoading(true);
+    const response = await axios.patch(`${API_BASE_URL}/tickets/${ticketId}`, { userId });
+    setTicket(response.data);
+    fetchUser(response.data.userId);
+  }
 
   if(loading) {
     return <SpinnerLoader />;
   }
 
-  const { id='', status='', number='' } = ticket || {};
+  const { status='', number='' } = ticket || {};
   const { image='', firstName, lastName } = user || {};
 
   return <div>
@@ -48,13 +65,27 @@ export const TicketDetails = () => {
       <Card.Body>
         <p>Ticket No.: {number}</p>
         <p className='text-capitalize'>Status: {status}</p>
-        {
-          user ? <>
-            <div className="d-flex align-items-center">
-              <Avatar url={image} />
-              <span>{firstName} {lastName}</span>
-            </div>
-          </> : null}
+        <div className="d-flex align-items-center">
+          <Avatar url={image} />
+          <Dropdown className="ms-2">
+            <Dropdown.Toggle variant="success" id="dropdown-basic">
+              {user ? <span className="ms-2">{firstName} {lastName}</span> : 'Unassigned'}
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              {
+                users.map(({firstName, lastName, id}) => {
+                  return (
+                    <Dropdown.Item key={id} onClick={() => updateAssignee(id)}>{firstName} {lastName}</Dropdown.Item>
+                  )
+                })
+              }
+            </Dropdown.Menu>
+          </Dropdown>
+          {assigneeLoading ? <Spinner animation="border" role="status" className="ms-2" variant="success">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner> : null}
+        </div>
       </Card.Body>
     </Card>
   </div>;
