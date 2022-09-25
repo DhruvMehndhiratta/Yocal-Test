@@ -9,7 +9,7 @@ interface IOption {
 interface SelectProps {
   options: IOption[];
   value: string;
-  onChange: () => void;
+  onChange: any;
 }
 
 export const Select: FC<SelectProps> = ({ options = [], value, onChange}) => {

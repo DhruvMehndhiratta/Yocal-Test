@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_BASE_URL, assigneeFilters } from "../../../constants";
 import { User, Ticket } from "../../types/";
 import { SpinnerLoader, Card, Select } from "../../components";
 import { Row, Col, Container } from "react-bootstrap";
 
-
-
 export const Listing = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState("");
 
   const fetchUsers = async () => {
     return axios.get(`${API_BASE_URL}/users`);
@@ -20,10 +18,14 @@ export const Listing = () => {
     return axios.get(`${API_BASE_URL}/tickets`);
   };
 
+  const fetchTicketsByStatus = (status: string) => {
+    return axios.get(`${API_BASE_URL}/tickets?status=${status}`);
+  };
+
   useEffect(() => {
     setLoading(true);
     (async () => {
-      Promise.all([fetchUsers(), fetchTickets()]).then((values) => {
+      Promise.all([fetchUsers(), !status ? fetchTickets(): fetchTicketsByStatus(status)]).then((values) => {
         const [users, ticketResponse] = values;
         ticketResponse.data.forEach((item: Ticket) => {
           const userIndex = users.data.findIndex(
@@ -37,11 +39,15 @@ export const Listing = () => {
         setLoading(false);
       });
     })();
-  }, []);
+  }, [status]);
 
-  const handleFilterChange = (e) => {
-    // console.log(value, "value")
-  }
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const {
+      target: { value },
+    } = e;
+    setStatus(value);
+  };
 
   return (
     <Container className="app">
@@ -50,16 +56,16 @@ export const Listing = () => {
       ) : tickets.length ? (
         <Row>
           <div className="select-container">
-            <span>Filter By Status: {'  '}</span>
-          <Select
-            value={status}
-            onChange={handleFilterChange}
-            options={assigneeFilters}
-          />
+            <span>Filter By Status: {"  "}</span>
+            <Select
+              value={status}
+              onChange={handleFilterChange}
+              options={assigneeFilters}
+            />
           </div>
           {tickets.map((item) => (
-            <Col xs={12} sm={6} md={6} lg={4}>
-              <Card key={item.number} ticket={item} />
+            <Col xs={12} sm={6} md={6} lg={4} key={item.number}>
+              <Card  ticket={item} />
             </Col>
           ))}
         </Row>
