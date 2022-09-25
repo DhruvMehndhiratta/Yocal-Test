@@ -1,10 +1,9 @@
 import './app.css';
-
-export type AppProps = {};
+import Routes from './Routes';
 
 const App = () => {
   return <div className="app">
-    hello
+    <Routes />
   </div>;
 };
 
