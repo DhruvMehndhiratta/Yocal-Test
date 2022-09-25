@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from 'axios';
 import { API_BASE_URL } from '../../../constants';
 import { User, Ticket } from '../../types/'
-
+import { SpinnerLoader, Card } from "../../components";
 
 export const Listing = () => {
   const [tickets, setTickets] = useState([])
@@ -16,11 +16,10 @@ export const Listing = () => {
   }
 
   useEffect(() => {
+    setLoading(true);
     (async () => {
       Promise.all([fetchUsers(), fetchTickets()]).then((values) => {
-  
         const [users, ticketResponse] = values;
-        
         ticketResponse.data.forEach((item: Ticket) => {
           const userIndex = users.data.findIndex((val: User) => item.userId === val.id)
           if(userIndex !== -1){
@@ -28,16 +27,17 @@ export const Listing = () => {
           }
         })
         setTickets(ticketResponse.data)
+        setLoading(false);
       })
-      // const users = await fetchUsers();
-      // let response = await fetchTickets();
-      // response.forEach((item) => )
     })();
 
 
   }, [])
-  console.log(tickets, "tickets")
-  return <div className="app">
-    Listing
-  </div>;
+
+  return( <div className="app">
+    {
+      loading ? <SpinnerLoader /> : tickets.map((item) => <Card ticket={item}/>)
+    }
+    
+  </div>)
 };
