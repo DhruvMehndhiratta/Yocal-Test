@@ -1,21 +1,17 @@
-import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
 import TicketDetails from "./pages/TicketDetails";
 import Listing from "./pages/Listing";
 
 const Routes = () => {
-  console.log(Route,  Router, TicketDetails, Listing)
   return (
     <Router>
-      {/* <Switch> */}
-        <Route path="/ticket-detail">
+        <Route path="/ticket-detail" exact>
           <TicketDetails />
         </Route>
-        <Route path="/">
+        <Route path="/" exact>
           <Listing />
         </Route>
-      {/* </Switch> */}
     </Router>
   );
 };
