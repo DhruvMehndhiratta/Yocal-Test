@@ -19,6 +19,7 @@ export const Select: FC<SelectProps> = ({ options = [], value, onChange }) => {
       value={value}
       onChange={onChange}
     >
+      <option value="">Choose By Status</option>
       {options.map((item: IOption) => (
         <option key={item.value} value={item.value}>
           {item.label}

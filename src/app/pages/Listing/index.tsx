@@ -19,6 +19,7 @@ export const Listing = () => {
   };
 
   const fetchTicketsByStatus = (status: string) => {
+    if(!status) return fetchTickets();
     return axios.get(`${API_BASE_URL}/tickets?status=${status}`);
   };
 
